@@ -1,0 +1,60 @@
+<%- include partials/header.ejs %>
+
+<!doctype html>
+<html lang="en">
+<style>
+    .bg1{
+      background: url("/images/eth.jpg"); 
+      min-height: 94vh;
+      background-size: 1920px 1080px;
+    }
+    #display{
+      -webkit-text-fill-color: grey;
+      text-align: center;
+      font-size: 35px;
+      font-weight: lighter;
+      margin-right: 10px;
+
+    }
+</style>
+
+<body onload="ethStats()">
+<div class="bg1">
+ <br/><br/>
+  <div class="btn-toolbar mb-3" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group me-2 mx-auto" role="group" aria-label="First group">
+      <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('display').innerHTML = price">ETH price</button>
+      <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('display').innerHTML = lastBlock">Total Blocks</button>
+      <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('display').innerHTML = size">Blockchain Size</button>
+      <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('display').innerHTML = variation">Market price variation (24h)</button>
+      <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('display').innerHTML = total">Total transactions</button>
+      <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('display').innerHTML = dailyTransaction">Transactions past 24h</button>
+    </div>
+    
+  </div>
+  <br/><br/><br/><br/>
+  <div id="display"> </div>
+    
+</body>
+</div>
+
+
+<script>
+   function ethStats() {
+      fetch("https://api.blockchair.com/ethereum/stats").then((response) => response.json()).then((stats) => {
+         console.log(stats)  
+         price =  stats.data.market_price_usd + "$";
+         lastBlock = stats.data.blocks;
+         size = stats.data.blockchain_size;
+         variation = stats.data.market_price_usd_change_24h_percentage + "$ in the last 24h";
+         total = stats.data.transactions + " total transactions in the blockchain";
+         dailyTransaction = stats.data.transactions_24h + " transactions in the past 24 hours";
+
+      })
+ 
+   };
+</script>  
+</html>
+
+
+<%- include partials/footer.ejs %>

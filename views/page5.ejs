@@ -1,0 +1,122 @@
+<%- include partials/header.ejs %>
+
+<style>
+  body{
+    background-color: #fffbf3;
+  }
+  h1{
+    font-family: Gallient;
+    font-size: 30px;
+    color: #6F4E37;
+    text-align:unset;
+    padding-left: 50px;
+    margin-top: 50px;
+  }
+  img{
+    float: right;
+    max-height: 80vh;
+    margin-right: 100px;
+    outline-width: 2px;
+    outline-color: #6F4E37;
+  }
+  .para{
+    padding: 100px;
+    margin-left: 70px;
+    font-family: Gallient;
+    font-size: 30px;
+    color: #6F4E37;
+    text-align: center;
+  }
+  .email{
+    font-family: 'Times New Roman', Times, serif;
+    text-align: left;
+  }
+  #inputDetails{
+    font-family: Gallient;
+    font-size: 20px;
+    color: #6F4E37;
+    margin-left: 10px;
+    margin-top: 10px;
+  }
+</style>
+<body onload="connectMetamask(),connectContract()">
+  <h1>
+      <b>VISIT US OR CALL US TODAY</b>
+      <img src="/images/Picture6.jpg"> <br/><br/><br/>
+      
+    <span class = "para">
+          <b style="font-size: larger;">Opening hours</b><br/> </br>
+              <b>Tue-Thu:</b> 9am - 7pm<br/>
+              <b>Fri-Sun:</b> 8am - 4pm <br/>
+              <b>Mon:</b> Closed <br/><br/>
+              <p class="email">jccafe@youcantseeus.com</p><br/><br/>
+              Enter your details below to claim your free Latte.
+              
+    </span>
+  </h1>
+      <input type="text" id="nameinput" style="font-family: Fabulist; font-size: 30px; margin-top: 10px; margin-left: 70px;" placeholder="Name"> <br/>
+      <input type="text" id="numberinput" style="font-family: Fabulist; font-size: 30px; margin-top: 10px; margin-left: 70px" placeholder="Number"> <br/>
+      <button type="button" class="btn btn-outline-dark"  onclick="storeNameAndNumber()" style="margin-top: 10px; text-align: center;  margin-left: 70px">Submit details</button>
+      <button type="button" class="btn btn-outline-dark"  onclick="getNameAndNumber()" style="margin-top: 10px; text-align: center;  margin-left: 10px">Refresh</button>
+      <p id="inputDetails"></p>
+<script>
+  let account;
+        const connectMetamask = async () => {
+            if(window.ethereum !== "undefined") {
+                const accounts = await ethereum.request({method: "eth_requestAccounts"});
+                account = accounts[0];
+            }
+        }
+        const connectContract = async () => {
+            const ABI = [
+            {
+              "inputs": [],
+              "name": "getNameAndNumber",
+              "outputs": [
+                {
+                  "internalType": "string",
+                  "name": "retName",
+                  "type": "string"
+                }
+              ],
+              "stateMutability": "view",
+              "type": "function"
+            },
+            {
+              "inputs": [
+                {
+                  "internalType": "string",
+                  "name": "_name",
+                  "type": "string"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "_no",
+                  "type": "uint256"
+                }
+              ],
+              "name": "setNameAndNumber",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          ];
+          const Address = "0x55a6bAD38a234977Dd6373490347e7AF9EA041eE"; // Taking Address from Remix 
+                      window.web3 = await new Web3(window.ethereum);
+                      window.contract = await new window.web3.eth.Contract(ABI, Address);
+        }
+        const storeNameAndNumber = async () => {
+            const name = document.getElementById("nameinput").value;
+            const number = document.getElementById("numberinput").value;
+            await window.contract.methods.setNameAndNumber(name,number).send({from:account})
+        }
+        const getNameAndNumber = async () => {
+          const details = await window.contract.methods.getNameAndNumber().call();
+          document.getElementById("inputDetails").innerHTML = `Hello ${details}! We will give you a callback on the provided number at our earliest convenience. `;
+        }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
+</body>
+
+
+<%- include partials/footer.ejs %>

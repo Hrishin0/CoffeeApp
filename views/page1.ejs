@@ -1,0 +1,151 @@
+<%- include partials/header.ejs %>
+
+<!DOCTYPE html>
+<html>
+    <style>
+        body{
+            background-color: #fffbf3;
+        }
+        h1{
+            font-family: Gallient;
+            font-size: 170px;
+            color: #6F4E37;
+            text-align:unset;
+            padding-left: 30px;
+            margin-top: 20px;
+        }
+        h2{
+            font-family: Fabulist;
+            font-size: 50px;
+            color: #4e3726;
+            text-align:unset;
+            padding-left: 30px;
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            background: transparent;
+            border-color: #6F4E37;
+            border-width: 1px;
+        }
+        input:focus,select:focus{
+            outline: none;
+        }
+        h3{
+            color: #6F4E37;
+            margin-left: 20vw;
+        }
+        #coffeeArea{
+            font-family: Fabulist;
+            font-size: 50px;
+        }
+                
+        
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Types</title>
+</head>
+<body onload="connectMetamask(),connectContract()">
+    
+    <h1> HOW MANY DIFFERENT COFFEE TYPES CAN YOU NAME? </h1> <br/><br/><br/><br/>
+    <div style="text-align: center; margin-left: 200px; margin-right: 200px;">
+        <h2><b> NAME A COFFEE THAT NO ONE HAS THOUGHT OF BEFORE AND CLAIM A FREE LATTE AND CHOCOLATE BROWNIE FROM OUR STORE </b></h2>
+    </div>
+
+
+    <div style="margin-left: 20px;margin-top: 20px;">
+       
+        <h3>Coffee Types <input type="text" id="coffeeType" style="font-family: Fabulist; font-size: 50px;">        
+            <button type="button" class="btn btn-outline-dark"  onclick="uniqueCoffee()" style="margin-left: 50px;">Add Coffee Type</button>
+            <button type="button" class="btn btn-outline-dark"  onclick="coffeeCount()">Get The Coffee List</button></h3>
+        <label for="coffeeType"></label>
+
+        <p id="coffeeArea">  </p>
+    </div>
+    <script>
+
+            let account;
+
+            const connectMetamask = async () => {
+                if (window.ethereum !== "undefined") {
+                    const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+                    account = accounts[0];
+                    document.getElementById("userArea").innerHTML = `User Account: ${account}`;
+                }
+            }
+
+            // Contract address and ABI
+                       
+            const connectContract = async () => {
+            const ABI = [
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "_value",
+                        "type": "string"
+                    }
+                ],
+                "name": "addCoffee",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "coffeeTypes",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getCoffeeTypes",
+                "outputs": [
+                    {
+                        "internalType": "string[]",
+                        "name": "",
+                        "type": "string[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+            
+            const address = '0x514448018889E351695Dbbe55C2693308247695B'; // Taking Address from Remix 
+            window.web3 = await new Web3(window.ethereum);
+            window.contract = await new window.web3.eth.Contract(ABI, address);
+            document.getElementById("contractArea").innerHTML = "Connected to Contract"; // calling the elementID above
+        }
+        
+        // Function to add a new coffee type
+        const uniqueCoffee = async () => {
+            const coffee = document.getElementById("coffeeType").value;
+            await window.contract.methods.addCoffee(coffee).send({from:account});
+        }
+
+        // Function to get the count of coffee types
+        const coffeeCount = async () => {
+            const count = await window.contract.methods.getCoffeeTypes().call();
+            document.getElementById("coffeeArea").innerHTML = `<b>Unique Types of Coffee:</b> ${count}`;
+        }
+     
+        
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
+</body>
+</html>
